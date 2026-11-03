@@ -12,7 +12,7 @@ jobs:
   python:
     runs-on: ubuntu-latest
     env:
-      MODEL_BUNDLE_DIR: ${{ runner.temp }}/empty_model_bundle
+      MODEL_BUNDLE_DIR: ${{ github.workspace }}/empty_model_bundle
     steps:
       - uses: actions/checkout@v7
         with:
