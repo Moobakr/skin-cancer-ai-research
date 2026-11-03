@@ -1,0 +1,121 @@
+{
+  "accuracy": 0.5233918128654971,
+  "balanced_accuracy": 0.428079088224437,
+  "macro_precision": 0.47893070318390935,
+  "macro_recall": 0.428079088224437,
+  "macro_f1": 0.4206532861346317,
+  "weighted_f1": 0.5104540732218944,
+  "classification_report": {
+    "ACK": {
+      "precision": 0.5323741007194245,
+      "recall": 0.74,
+      "f1-score": 0.6192468619246861,
+      "support": 100.0
+    },
+    "BCC": {
+      "precision": 0.5480769230769231,
+      "recall": 0.5089285714285714,
+      "f1-score": 0.5277777777777778,
+      "support": 112.0
+    },
+    "MEL": {
+      "precision": 0.08333333333333333,
+      "recall": 0.2,
+      "f1-score": 0.11764705882352941,
+      "support": 5.0
+    },
+    "NEV": {
+      "precision": 0.6304347826086957,
+      "recall": 0.6904761904761905,
+      "f1-score": 0.6590909090909091,
+      "support": 42.0
+    },
+    "SCC": {
+      "precision": 0.2222222222222222,
+      "recall": 0.15,
+      "f1-score": 0.1791044776119403,
+      "support": 40.0
+    },
+    "SEK": {
+      "precision": 0.8571428571428571,
+      "recall": 0.27906976744186046,
+      "f1-score": 0.42105263157894735,
+      "support": 43.0
+    },
+    "accuracy": 0.5233918128654971,
+    "macro avg": {
+      "precision": 0.47893070318390935,
+      "recall": 0.428079088224437,
+      "f1-score": 0.4206532861346317,
+      "support": 342.0
+    },
+    "weighted avg": {
+      "precision": 0.5475525869556184,
+      "recall": 0.5233918128654971,
+      "f1-score": 0.5104540732218944,
+      "support": 342.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      74,
+      17,
+      1,
+      1,
+      7,
+      0
+    ],
+    [
+      30,
+      57,
+      3,
+      8,
+      14,
+      0
+    ],
+    [
+      3,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      6,
+      4,
+      2,
+      29,
+      0,
+      1
+    ],
+    [
+      14,
+      19,
+      0,
+      0,
+      6,
+      1
+    ],
+    [
+      12,
+      6,
+      5,
+      8,
+      0,
+      12
+    ]
+  ],
+  "class_names": [
+    "ACK",
+    "BCC",
+    "MEL",
+    "NEV",
+    "SCC",
+    "SEK"
+  ],
+  "split": "test",
+  "sample_count": 342,
+  "inference": "single_view",
+  "legacy_biopsy_input": false
+}

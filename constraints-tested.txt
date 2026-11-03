@@ -1,0 +1,14 @@
+# Direct runtime versions used for the recorded five-field experiment.
+# Use with pip -c; this is not a complete lock of all transitive dependencies.
+# Python 3.12.2 was used locally; CI uses the Python 3.12 series.
+Django==5.2.14
+djangorestframework==3.17.1
+django-cors-headers==4.9.0
+Pillow==12.2.0
+numpy==1.26.4
+pandas==3.0.2
+joblib==1.5.3
+scikit-learn==1.8.0
+opencv-python-headless==4.11.0.86
+tensorflow==2.17.1
+keras==3.14.1

@@ -1,0 +1,121 @@
+{
+  "accuracy": 0.6140350877192983,
+  "balanced_accuracy": 0.49697166851236624,
+  "macro_precision": 0.5009830974118802,
+  "macro_recall": 0.49697166851236624,
+  "macro_f1": 0.49453353084685037,
+  "weighted_f1": 0.6040799639364822,
+  "classification_report": {
+    "ACK": {
+      "precision": 0.6178861788617886,
+      "recall": 0.76,
+      "f1-score": 0.6816143497757847,
+      "support": 100.0
+    },
+    "BCC": {
+      "precision": 0.6310679611650486,
+      "recall": 0.5803571428571429,
+      "f1-score": 0.6046511627906976,
+      "support": 112.0
+    },
+    "MEL": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 5.0
+    },
+    "NEV": {
+      "precision": 0.7291666666666666,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.7777777777777778,
+      "support": 42.0
+    },
+    "SCC": {
+      "precision": 0.2777777777777778,
+      "recall": 0.25,
+      "f1-score": 0.2631578947368421,
+      "support": 40.0
+    },
+    "SEK": {
+      "precision": 0.75,
+      "recall": 0.5581395348837209,
+      "f1-score": 0.64,
+      "support": 43.0
+    },
+    "accuracy": 0.6140350877192983,
+    "macro avg": {
+      "precision": 0.5009830974118802,
+      "recall": 0.49697166851236624,
+      "f1-score": 0.49453353084685037,
+      "support": 342.0
+    },
+    "weighted avg": {
+      "precision": 0.6036676627127936,
+      "recall": 0.6140350877192983,
+      "f1-score": 0.6040799639364822,
+      "support": 342.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      76,
+      10,
+      0,
+      2,
+      9,
+      3
+    ],
+    [
+      22,
+      65,
+      0,
+      5,
+      17,
+      3
+    ],
+    [
+      3,
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      1,
+      0,
+      35,
+      0,
+      2
+    ],
+    [
+      10,
+      20,
+      0,
+      0,
+      10,
+      0
+    ],
+    [
+      8,
+      5,
+      0,
+      6,
+      0,
+      24
+    ]
+  ],
+  "class_names": [
+    "ACK",
+    "BCC",
+    "MEL",
+    "NEV",
+    "SCC",
+    "SEK"
+  ],
+  "split": "test",
+  "sample_count": 342,
+  "inference": "single_view",
+  "legacy_biopsy_input": false
+}

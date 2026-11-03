@@ -1,0 +1,13 @@
+{
+  "selected_model": "multimodal_screening",
+  "criterion": "validation macro_f1",
+  "validation_scores": {
+    "image_screening": 0.4272064273791067,
+    "multimodal_screening": 0.5062843671647659
+  },
+  "checkpoint_sha256": {
+    "image_screening": "7b71cc5cb61f14878369e984620a202ba3fc6ccc74974dfb4b01dd7040509441",
+    "multimodal_screening": "e76c53bfc77ddc5fbafe7cd4fbd6497a2d896c729d8a33fa995cf0fccc1a1822"
+  },
+  "frozen_before_test_evaluation_utc": "2026-11-03T19:08:55.663459+00:00"
+}

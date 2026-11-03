@@ -1,0 +1,20 @@
+{
+  "seed": 42,
+  "image_size": 300,
+  "batch_size": 8,
+  "warmup_epoch_limit": 25,
+  "fine_tune_epoch_limit": 8,
+  "selection_metric": "validation macro_f1",
+  "checkpoint_metric": "validation loss",
+  "test_policy": "Evaluate both frozen models once after validation; no test-based tuning",
+  "device": "CPU",
+  "python": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "packages": {
+    "tensorflow": "2.17.1",
+    "keras": "3.14.1",
+    "numpy": "1.26.4",
+    "pandas": "3.0.2",
+    "scikit-learn": "1.8.0",
+    "Pillow": "12.2.0"
+  }
+}
