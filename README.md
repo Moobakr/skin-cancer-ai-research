@@ -1,257 +1,124 @@
-# Skin Cancer AI: Research Extension
+# Skin Cancer AI Research
 
-A research extension of the **[original Skin Cancer AI Assistant](https://github.com/Moobakr/skin-cancer-ai-assistant)**, using the **PAD-UFES-20** clinical image dataset.
-This repository contains the image-only versus five-field metadata comparison.
-The recovered original project and its preserved 22-field model are published separately.
-It includes:
+A research extension examining **image-only versus image-plus-metadata skin lesion classification** with EfficientNetB3 on **PAD-UFES-20**. The study compares two classifiers on the same patient split and reports both aggregate performance and class-level failures.
 
-- TensorFlow/Keras training pipelines for image-only and multimodal models
-- Patient-level train/validation/test splitting to reduce data leakage
-- Class imbalance handling
-- Grad-CAM explainability utilities
-- Image quality checks
-- Django REST API for predictions
-- React responsive frontend
-- Model card, Q&A notes, and presentation guide
+[![Build and tests](https://github.com/Moobakr/skin-cancer-ai-research/actions/workflows/checks.yml/badge.svg)](https://github.com/Moobakr/skin-cancer-ai-research/actions/workflows/checks.yml)
 
-> **Important medical disclaimer:** This project is for education and research only. It is not a medical diagnosis system and must not replace professional dermatology consultation.
+**My project role: Model training.** This repository extends [Skin Cancer AI Assistant](https://github.com/Moobakr/skin-cancer-ai-assistant) with a focused training and evaluation study.
 
-## Repository and experiment status
+## Research question
 
-This repository describes the **five-field revision**: age, gender, body region,
-smoking and drinking history. The original presentation model used 22 metadata
-fields and is a separate archived experiment. Its presentation figures must not
-be attributed to this revision.
+**How does a classifier using lesion images and five patient fields compare with image-only EfficientNetB3 on the same patient split?**
 
-| Current experiment | Test top-1 accuracy | Test macro-F1 |
+The metadata model uses only **age, gender, body region, smoking, and drinking history**: the fields collected by the application. Biopsy status and other fields outside the form are excluded to study a more realistic input constraint.
+
+## Experimental approach
+
+- **Models:** ImageNet-pretrained EfficientNetB3 with 300 x 300 RGB inputs. The image-only model uses an image classification head; the multimodal model combines image features with a small metadata network.
+- **Training:** Frozen-backbone training followed by fine-tuning, with augmentation, class weights, and focal loss with label smoothing. Both runs use batch size 8 and seed 42, with limits of 25 frozen-backbone epochs and 8 fine-tuning epochs.
+- **Selection:** Checkpoints are chosen using validation loss. The final candidate is selected by validation macro-F1 before test evaluation.
+- **Evaluation:** Single-view predictions, top-1 accuracy, balanced accuracy, macro-F1, per-class recall, and confusion matrices.
+
+| Split | Images | Patients |
 |---|---:|---:|
-| Image only | 52.3% | 0.421 |
-| Image + five metadata fields | 61.4% | 0.495 |
+| Training | 1,619 | 961 |
+| Validation | 337 | 206 |
+| Test | 342 | 206 |
 
-The metadata model was selected using validation macro-F1 before test evaluation.
-It detected **0 of 5 melanoma test images**. These results do not establish clinical
-screening effectiveness. See the [experiment report](docs/SCREENING_EXPERIMENT_REPORT.md),
-[model card](docs/MODEL_CARD.md), and [aggregate result files](docs/results/README.md).
-All reported accuracies above are single-view, top-1 scores on the held-out test set.
+Both models use identical image membership in each split, with **zero patient overlap** between splits. Training ran on CPU.
 
-**Fresh clone:** datasets, trained weights, local databases and model backups are
-excluded from Git. Without a model bundle, the app uses clearly labelled placeholder
-demo predictions. Screenshots have not yet been added; capture them from the actual
-app before including them in a portfolio. Interface screenshots are not evidence
-of clinical performance.
+Implementation: [model architectures](ai_model/src/models.py), [image-only training](ai_model/src/train_image_model.py), [multimodal training](ai_model/src/train_multimodal_model.py), and [evaluation](ai_model/src/evaluate.py).
 
-Tested locally with **Python 3.12.2**, **Node 24.15.0**, and **npm 11.12.1**.
-Use Python 3.12 and Node 24. The frontend lockfile and
-[tested direct dependency constraints](constraints-tested.txt) record the package versions.
+## Results
 
----
+| Model | Validation macro-F1 | Test accuracy | Test balanced accuracy | Test macro-F1 |
+|---|---:|---:|---:|---:|
+| Image only | 0.427 | 52.3% | 42.8% | 0.421 |
+| Image + five metadata fields | **0.506** | **61.4%** | **49.7%** | **0.495** |
 
-## 1. Project idea
+The validation-selected multimodal model scored **9.1 percentage points higher in test accuracy** and **0.074 higher in test macro-F1** than the image-only model on this split.
 
-Instead of building a basic image classifier, this project implements an **explainable multimodal AI assistant**:
+**Critical finding:** the multimodal model detected **0 of 5 melanoma test images**, compared with **1 of 5** for the image-only model. Better aggregate scores did not establish reliable detection of this rare class. This prototype is for educational research and has not been validated for medical diagnosis.
 
-```text
-Skin lesion image + optional clinical metadata
-        ↓
-Django API preprocessing and model inference
-        ↓
-Prediction probabilities + risk level + uncertainty message + image quality warnings
-        ↓
-React user interface with simple and technical result views
-```
+The full [experiment report](docs/SCREENING_EXPERIMENT_REPORT.md) includes per-class results, confusion matrices, and failure examples. [Aggregate metric files](docs/results/README.md) and the [frozen validation selection](docs/results/selection.json) record the measured results and model-selection decision.
 
-The final system is designed to be easy to explain during a viva or project discussion.
+## Interpretation and limits
 
----
+- The two implemented classifiers differ in their final dropout rates, and their training included different interruptions and restarts. The observed score difference cannot be attributed solely to metadata.
+- The study uses one dataset, one split, and one seed, without confidence intervals or external validation. Five melanoma test images provide limited evidence about performance on that class.
+- Evaluation uses available dataset metadata. Reliability with missing form inputs and calibration of confidence scores have not been established.
 
-## 2. Repository structure
+The study illustrates why input availability, patient-level splitting, and class-specific evaluation matter alongside overall accuracy. Detailed limitations are recorded in the [model card](docs/MODEL_CARD.md) and experiment report.
 
-```text
-skin_cancer_ai_assistant/
-├── ai_model/                 # Training/evaluation/export code
-│   ├── src/
-│   ├── artifacts/            # Generated models, metrics, class files
-│   └── requirements.txt
-│
-├── backend/                  # Django REST API
-│   ├── predictions/
-│   ├── skin_cancer_api/
-│   ├── manage.py
-│   └── requirements.txt
-│
-├── frontend/                 # React + Vite frontend
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-│
-├── docs/                     # Report, Q&A, model card, API docs
-└── scripts/                  # Helper setup scripts
-```
+## Application and engineering
 
----
+| Component | Implementation |
+|---|---|
+| Model training | TensorFlow/Keras transfer learning and fine-tuning |
+| Metadata processing | scikit-learn imputation, scaling, and categorical encoding |
+| Inference API | Django REST Framework; normalized form values and single-view inference |
+| Interface | React and Vite; image upload, optional metadata, probabilities and quality warnings |
+| Input consistency | TensorFlow resizing in training evaluation and API inference; a local PNG preprocessing parity check |
+| Automated checks | Patient split and feature-selection tests, backend preprocessing/inference tests, and frontend production build |
 
-## 3. Dataset setup
+The frontend lockfile, [tested Python constraints](constraints-tested.txt), and [recorded experiment environment](docs/results/environment.json) document the software environment. CI checks software behavior; the dataset metrics were measured separately with trained models.
 
-Download the Kaggle dataset manually or using Kaggle API.
+## Run locally
 
-Expected local layout:
+Requirements: **Python 3.12** and **Node.js 24**.
 
-```text
-data/pad_ufes_20/
-├── metadata.csv
-└── images/
-    ├── PAT_1_15_820.png
-    └── ...
-```
+### Interface demo
 
-The training code tries to detect the metadata file and image filename column automatically. If your extracted Kaggle folder has a different structure, set paths explicitly in the command line.
+A fresh clone excludes dataset images and trained weights. The following setup runs the app with **labelled placeholder predictions**.
 
-See [`docs/DATASET_SETUP.md`](docs/DATASET_SETUP.md).
-
----
-
-## 4. Train the model
-
-Use the backend Python environment created below for training as well as inference.
-Install `backend/requirements.txt` with `constraints-tested.txt` before training;
-the lightweight demo installation omits TensorFlow.
-
-The recorded protocol uses EfficientNetB3, 300 by 300 images, batch size 8,
-seed 42, up to 25 frozen-backbone epochs and 8 fine-tuning epochs. Exact commands
-are in [the experiment plan](docs/MINIMAL_EXPERIMENT_PLAN.md).
-That plan uses Windows paths; on macOS/Linux replace
-`..\backend\.venv\Scripts\python.exe` with `../backend/.venv/bin/python`.
-
-Use fresh output directories when running additional experiments. The recorded runs
-included interruptions and restarts; the report documents them. Re-running training
-is not a guarantee of bit-for-bit identical weights or scores.
-
-For notebooks and plots, also install `ai_model/requirements.txt`. Matplotlib was not
-used in the recorded command-line comparison and is not included in the tested
-direct-runtime constraints.
-
----
-
-## 5. Run Django backend
-
-Run these commands from the repository root.
-
-Windows PowerShell, lightweight placeholder demo:
+From the repository root in PowerShell:
 
 ```powershell
 py -3.12 -m venv backend/.venv
 .\backend\.venv\Scripts\python.exe -m pip install -c constraints-tested.txt -r backend/requirements-core.txt
 .\backend\.venv\Scripts\python.exe backend/manage.py migrate
-.\backend\.venv\Scripts\python.exe backend/manage.py runserver
+.\backend\.venv\Scripts\python.exe backend/manage.py runserver --noreload
 ```
 
-macOS/Linux, lightweight placeholder demo:
+In a second terminal:
 
-```bash
-python3.12 -m venv backend/.venv
-backend/.venv/bin/python -m pip install -c constraints-tested.txt -r backend/requirements-core.txt
-backend/.venv/bin/python backend/manage.py migrate
-backend/.venv/bin/python backend/manage.py runserver
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd run dev -- --strictPort
 ```
 
-For real model inference or training, install the full runtime into the same environment:
+Open **http://localhost:5173**. Model loading status is available at **http://localhost:8000/api/health/**. The prediction endpoint is `POST /api/predict/`.
+
+On macOS/Linux, use `python3.12`, `backend/.venv/bin/python`, and `npm` in place of the Windows commands.
+
+### Training and trained-model inference
+
+Install the full runtime into the same environment:
 
 ```powershell
 .\backend\.venv\Scripts\python.exe -m pip install -c constraints-tested.txt -r backend/requirements.txt
 ```
 
-On macOS/Linux use `backend/.venv/bin/python` for that command. Full TensorFlow
-installation and training depend on platform support and available hardware.
-Backend configuration is read from process environment variables;
-`backend/.env.example` is a reference template and is not loaded automatically.
+Follow the [dataset setup](docs/DATASET_SETUP.md) and [experiment protocol](docs/MINIMAL_EXPERIMENT_PLAN.md) to train, evaluate, and export a compatible five-field model bundle into `backend/model_bundle/`. Restart the backend after export. The recorded runs included restarts; exact weights and scores are not guaranteed by rerunning the commands.
 
-Health check:
-
-```text
-http://localhost:8000/api/health/
-```
-
-Prediction endpoint:
-
-```text
-POST http://localhost:8000/api/predict/
-```
-
-If no trained model is exported yet, the backend runs in **demo-safe mode** and returns a clear warning that predictions are placeholders.
-
----
-
-## 6. Run React frontend
-
-```bash
-cd frontend
-npm ci
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-In PowerShell, use `npm.cmd` if execution policy prevents running `npm.ps1`.
-The optional `frontend/.env.example` documents the API URL override.
-
----
-
-## 7. Best features to present
-
-1. **Patient-level split** to reduce data leakage.
-2. **Transfer learning** using EfficientNetB3.
-3. **Multimodal model** combining image and metadata.
-4. **Confidence-aware prediction** with uncertainty warnings.
-5. **Risk grouping** for user-friendly output.
-6. **Image quality checks** for brightness, size, and blur.
-7. **Grad-CAM utility** for explainability.
-8. **Full-stack Django + React integration**.
-
----
-
-## 8. Contributions, checks and publishing
-
-See [contributions and attribution](docs/CONTRIBUTIONS.md) for method provenance,
-AI-assistance disclosure and guidance for assigning individual/team credit.
-The architecture uses established methods; the experiment is a comparison of two
-implemented classifiers, not a claim of a novel medical diagnostic method.
-
-Run the lightweight checks with the backend environment:
+### Software checks
 
 ```powershell
-.\backend\.venv\Scripts\python.exe backend/manage.py test predictions
 .\backend\.venv\Scripts\python.exe -m unittest ai_model.src.test_data
+.\backend\.venv\Scripts\python.exe backend/manage.py test predictions
 ```
 
-From `frontend`, run `npm ci` and `npm run build`. GitHub Actions runs these backend
-and data tests plus the frontend production build with Python 3.12 and Node 24.
-CI does not download patient data or weights and does not validate model accuracy.
-The full local bundle verification script requires the trained bundle and dataset.
+From `frontend`, run `npm.cmd run build`.
 
-Initialize Git in this inner `skin_cancer_ai_assistant` directory. Keep datasets,
-virtual environments, databases, model backups and checkpoints out of commits.
-If weights are distributed separately, first review their applicable terms and
-include a complete compatible bundle. The repository itself does not provide a
-trained-weight download.
+## Project structure
 
-**License:** no source-code license has been selected, at the owner's request.
-Dataset, pretrained-weight and dependency terms remain separate.
+```text
+ai_model/   Training, preprocessing, evaluation, and model export
+backend/    Django API, inference, input validation, and tests
+frontend/   React interface
+docs/       Experiment protocol, results, model card, and API documentation
+scripts/    Experiment reporting and local verification tools
+```
 
----
-
-## Focused research revision
-
-The matched image-only and five-field metadata models have been trained and evaluated.
-The validation-selected **Image + five metadata fields** model is exported to the backend.
-Read [the experiment report](docs/SCREENING_EXPERIMENT_REPORT.md) and
-[model card](docs/MODEL_CARD.md) for measured results and limitations.
-
-Biopsy status is excluded from revised training. API input values are normalized,
-image contrast is preserved, and inference uses one image view. Latency improvement
-has not been benchmarked. Restart Django to load the replacement bundle.
-
-Melanoma detection in the test set: **0/5**. The prototype should not guide clinical decisions.
+See [method and dataset attribution](docs/CONTRIBUTIONS.md) and [API documentation](docs/API.md) for supporting details.
