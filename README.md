@@ -1,6 +1,8 @@
-# Explainable Multimodal Skin Cancer Screening Assistant
+# Skin Cancer AI: Research Extension
 
-A student research prototype using the **PAD-UFES-20** clinical image dataset.
+A research extension of the **[original Skin Cancer AI Assistant](https://github.com/Moobakr/skin-cancer-ai-assistant)**, using the **PAD-UFES-20** clinical image dataset.
+This repository contains the image-only versus five-field metadata comparison.
+The recovered original project and its preserved 22-field model are published separately.
 It includes:
 
 - TensorFlow/Keras training pipelines for image-only and multimodal models
